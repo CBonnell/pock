@@ -1,10 +1,10 @@
 (function () {
-    var SERIAL_NUMBER = 0;
-    var DATE = '500101000000Z';
-    var O_RDN_VALUE = '-'.repeat(20) + 'PROOF OF COMPROMISED KEY' + '-'.repeat(20);
+    const SERIAL_NUMBER = 0;
+    const DATE = '500101000000Z';
+    const O_RDN_VALUE = '-'.repeat(20) + 'PROOF OF COMPROMISED KEY' + '-'.repeat(20);
 
     function readCertificatePem (certificatePem) {
-        let certificate = new X509();
+        const certificate = new X509();
 
         certificate.readCertPEM(certificatePem);
 
@@ -12,16 +12,16 @@
     }
 
     function getChallengeCertificateSubject (certificatePem) {
-        let hex = pemtohex(certificatePem);
+        const hex = pemtohex(certificatePem);
 
         // get certificate SHA-256 thumbprint
-        let hashPadded = KJUR.crypto.Util.hashHex(hex, 'sha256');
+        const thumbprint = KJUR.crypto.Util.hashHex(hex, 'sha256');
 
-        return `/CN=${hashPadded}/O=${O_RDN_VALUE}`;
+        return `/CN=${thumbprint}/O=${O_RDN_VALUE}`;
     }
 
     function isSelfSigned (certificate) {
-        let publicKey = certificate.getPublicKey();
+        const publicKey = certificate.getPublicKey();
 
         return certificate.getSubjectHex() == certificate.getIssuerHex() &&
             certificate.verifySignature(publicKey);
@@ -52,15 +52,15 @@
     }
 
     window.createProofOfKeyCompromise = function (compromisedCertificatePem, privateKeyPem) {
-        let compromisedCertificate = readCertificatePem(compromisedCertificatePem);
-        let key = KEYUTIL.getKey(privateKeyPem);
+        const compromisedCertificate = readCertificatePem(compromisedCertificatePem);
+        const key = KEYUTIL.getKey(privateKeyPem);
 
-        let dn = getChallengeCertificateSubject(compromisedCertificatePem);
-        let sigAlgName = getSignatureAlgorithmNameForKey(key);
+        const dn = getChallengeCertificateSubject(compromisedCertificatePem);
+        const sigAlgName = getSignatureAlgorithmNameForKey(key);
 
-        let publicKeyPem = KEYUTIL.getPEM(compromisedCertificate.getPublicKey());
+        const publicKeyPem = KEYUTIL.getPEM(compromisedCertificate.getPublicKey());
 
-        let challengeCertificatePem = KJUR.asn1.x509.X509Util.newCertPEM({
+        const challengeCertificatePem = KJUR.asn1.x509.X509Util.newCertPEM({
             serial: {int: SERIAL_NUMBER},
             sigalg: {name: sigAlgName},
             issuer: {str: dn},
@@ -71,7 +71,7 @@
             cakey: key
         });
 
-        let challengeCertificate = readCertificatePem(challengeCertificatePem);
+        const challengeCertificate = readCertificatePem(challengeCertificatePem);
 
         if (!challengeCertificate.verifySignature(compromisedCertificate.getPublicKey())) {
             throw 'The public key in the certificate does not match the compromised private key';
@@ -81,8 +81,8 @@
     };
 
     window.verifyProofOfKeyCompromise = function (compromisedCertificatePem, challengeCertificatePem) {
-        let compromisedCertificate = readCertificatePem(compromisedCertificatePem);
-        let challengeCertificate = readCertificatePem(challengeCertificatePem);
+        const compromisedCertificate = readCertificatePem(compromisedCertificatePem);
+        const challengeCertificate = readCertificatePem(challengeCertificatePem);
 
         if (!verifyCertificateFields(challengeCertificate)) {
             throw 'Challenge certificate does not contain the expected certificate field values';
