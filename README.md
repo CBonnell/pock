@@ -1,1 +1,2 @@
-# pock
+# PoCK: Proof of Compromised Key
+

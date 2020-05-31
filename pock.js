@@ -14,8 +14,8 @@
     function getChallengeCertificateSubject (certificatePem) {
         let hex = pemtohex(certificatePem);
 
-        // get certificate SHA-256 thumbprint and pad to 64 characters (maximum CN length)
-        let hashPadded = KJUR.crypto.Util.hashHex(hex, 'sha256').padEnd('-', 64);
+        // get certificate SHA-256 thumbprint
+        let hashPadded = KJUR.crypto.Util.hashHex(hex, 'sha256');
 
         return `/CN=${hashPadded}/O=${O_RDN_VALUE}`;
     }
@@ -24,7 +24,7 @@
         let publicKey = certificate.getPublicKey();
 
         return certificate.getSubjectHex() == certificate.getIssuerHex() &&
-            certificate.verifySignature(publicKey);        
+            certificate.verifySignature(publicKey);
     }
 
     function verifyCertificateFields (certificate) {
@@ -33,17 +33,36 @@
             certificate.getNotBefore() == certificate.getNotAfter();
     }
 
+    function getSignatureAlgorithmNameForKey (key) {
+        switch (key.constructor) {
+            case KJUR.crypto.ECDSA:
+                switch (key.getShortNISTCurveName()) {
+                    case 'P-256':
+                        return 'SHA256withECDSA';
+                    case 'P-384':
+                        return 'SHA384withECDSA';
+                    default:
+                        throw 'Unsupported ECDSA curve';
+                }
+            case RSAKey:
+                return 'SHA256withRSA';
+            default:
+                throw 'Unsupported key type: ' + key.constructor;
+        }
+    }
+
     window.createProofOfKeyCompromise = function (compromisedCertificatePem, privateKeyPem) {
         let compromisedCertificate = readCertificatePem(compromisedCertificatePem);
         let key = KEYUTIL.getKey(privateKeyPem);
 
         let dn = getChallengeCertificateSubject(compromisedCertificatePem);
+        let sigAlgName = getSignatureAlgorithmNameForKey(key);
 
         let publicKeyPem = KEYUTIL.getPEM(compromisedCertificate.getPublicKey());
 
         let challengeCertificatePem = KJUR.asn1.x509.X509Util.newCertPEM({
             serial: {int: SERIAL_NUMBER},
-            sigalg: {name: compromisedCertificate.getSignatureAlgorithmName()},
+            sigalg: {name: sigAlgName},
             issuer: {str: dn},
             subject: {str: dn},
             notbefore: {str: DATE},
