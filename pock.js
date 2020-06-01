@@ -17,7 +17,7 @@
     }
 
     function verifyCertificateFields (certificate) {
-        return certificate.getSerialNumber() == SERIAL_NUMBER &&
+        return parseInt(certificate.getSerialNumberHex(), 16) == SERIAL_NUMBER &&
             certificate.getNotBefore() == DATE &&
             certificate.getNotBefore() == certificate.getNotAfter();
     }
@@ -54,7 +54,7 @@
         return certificate;
     }
 
-    window.createProofOfKeyCompromise = function (compromisedCertificatePem, privateKeyPem) {
+    window.createProofOfCompromisedKey = function (compromisedCertificatePem, privateKeyPem) {
         const compromisedCertificate = readCertificatePem(compromisedCertificatePem);
         const key = KEYUTIL.getKey(privateKeyPem);
 
@@ -83,24 +83,24 @@
         return challengeCertificatePem;
     };
 
-    window.verifyProofOfKeyCompromise = function (compromisedCertificatePem, challengeCertificatePem) {
+    window.verifyProofOfCompromisedKey = function (compromisedCertificatePem, challengeCertificatePem) {
         const compromisedCertificate = readCertificatePem(compromisedCertificatePem);
         const challengeCertificate = readCertificatePem(challengeCertificatePem);
 
         if (!verifyCertificateFields(challengeCertificate)) {
-            throw 'Challenge certificate does not contain the expected certificate field values';
+            throw 'Proof of Compromised Key certificate does not contain the expected certificate field values';
         }
 
         if (compromisedCertificate.getPublicKeyHex() != challengeCertificate.getPublicKeyHex()) {
-            throw 'Compromised certificate and challenge certificate public keys do not match';
+            throw 'Compromised certificate and Proof of Compromised Key certificate public keys do not match';
         }
 
         if (!isSelfSigned (challengeCertificate)) {
-            throw 'Challenge certificate is not self-signed';
+            throw 'Proof of Compromised Key certificate is not self-signed';
         }
 
-        if (challengeCertificate.getSubjectString() != getChallengeCertificateSubject(compromisedCertificate)) {
-            throw 'Challenege certificate subject does not match compromised certificate thumbprint';
+        if (challengeCertificate.getSubjectString() != getChallengeCertificateSubject(compromisedCertificatePem)) {
+            throw 'Proof of Compromised Key certificate subject does not match compromised certificate thumbprint';
         }
     };
 })();

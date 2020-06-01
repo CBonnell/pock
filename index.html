@@ -16,7 +16,7 @@
     <div class="container-fluid">
       <h1>Proof of Compromised Key</h1>
 
-      <div id="error-display">
+      <div id="message-display">
       </div>
 
       <nav>
@@ -27,48 +27,88 @@
       </nav>
       <div class="tab-content" id="nav-tabContent">
         <div class="tab-pane fade show active" id="nav-create-pock" role="tabpanel" aria-labelledby="nav-create-pock-tab">
-          <form action="#" onsubmit="event.preventDefault(); createPock();">
-          <div class="row">
-            <div class="col">
-              <div class="form-group">
-                <label for="txtCertificatePem">Certificate PEM Text</label>
-                <textarea class="form-control" cols="64" rows="15" id="txtCertificatePem" placeholder="A certificate starting with ----BEGIN CERTIFICATE-----"></textarea>
+          <form id="frmCreatePock" action="#" onsubmit="event.preventDefault(); createPock();">
+            <div class="row">
+              <div class="col">
+                <div class="form-group">
+                  <label for="txtCertificatePem">Certificate PEM Text</label>
+                  <textarea class="form-control" cols="64" rows="15" id="txtCertificatePem" placeholder="A certificate starting with ----BEGIN CERTIFICATE-----"></textarea>
+                </div>
+              </div>
+              <div class="col">
+                <div id="compromisedCertificateDetailsCreate" class="mt-2">
+                </div>
               </div>
             </div>
-            <div class="col">
-              <div id="compromisedCertificateDetails" class="mt-2">
-
+            <div class="row">
+              <div class="col">
+                <div class="form-group">
+                  <label for="txtCompromisedKeyPem">Compromised Key PEM Text</label>
+                  <textarea class="form-control" cols="64" rows="10" id="txtCompromisedKeyPem" placeholder="A private key starting with a header similar to -----BEGIN PRIVATE KEY-----"></textarea>
+                </div>
+              </div>
+              <div class="col">
+                <div id="compromisedKeyDetails" class="mt-3">
+                </div>
               </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="col">
-              <div class="form-group">
-                <label for="txtCompromisedKeyPem">Compromised Key PEM Text</label>
-                <textarea class="form-control" cols="64" rows="10" id="txtCompromisedKeyPem" placeholder="A private key starting with a header similar to -----BEGIN PRIVATE KEY-----"></textarea>
+            <div class="row">
+              <div class="col">
+                <button type="submit" form="frmCreatePock" class="btn btn-primary">Create Proof of Compromised Key</button>
               </div>
             </div>
-            <div class="col" id="compromisedKeyDetails">
-
+            <div class="row mt-2">
+              <div class="card" id="createPockResultContainer" style="display: none;">
+                <div class="card-body">
+                  <pre id="createPockResult"></pre>
+                  <button id="btnCopyPockPem" class="btn btn-success">Copy to Clipboard</button>
+                </div>
+              </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="col">
-              <button type="submit" class="btn btn-primary">Create Proof of Compromised Key</button>
-            </div>
-            <div class="col" id="createPockResult">
-            </div>
-          </div>
+          </form>
         </div>
         <div class="tab-pane fade" id="nav-verify-pock" role="tabpanel" aria-labelledby="nav-verify-pock-tab">
-          
+          <form id="frmVerifyPock" action="#" onsubmit="event.preventDefault(); verifyPock();">
+            <div class="row">
+              <div class="col">
+                <div class="form-group">
+                  <label for="txtCompromisedCertificatePem">Compromised Certificate PEM Text</label>
+                  <textarea class="form-control" cols="64" rows="15" id="txtCompromisedCertificatePem" placeholder="A certificate starting with ----BEGIN CERTIFICATE-----"></textarea>
+                </div>
+              </div>
+              <div class="col">
+                <div id="compromisedCertificateDetailsVerify" class="mt-2">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <div class="form-group">
+                  <label for="txtPockCertificatePem">Proof of Compromised Key PEM Text</label>
+                  <textarea class="form-control" cols="64" rows="15" id="txtPockCertificatePem" placeholder="A certificate starting with ----BEGIN CERTIFICATE-----"></textarea>
+                </div>
+              </div>
+              <div class="col">
+                <div id="pockCertificateDetailsVerify" class="mt-2">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <button type="submit" form="frmVerifyPock" class="btn btn-primary">Verify Proof of Compromised Key</button>
+              </div>
+            </div>
+            <div class="row mt-2">
+              <div class="card" id="verifyPockResultContainer" style="display: none;">
+                <div class="card-body">
+                  <div id="verifyPockResult"></div>
+                </div>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
     </div>
-
-
-
-    <pre><span id="output"></span></pre> 
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
