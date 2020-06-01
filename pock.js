@@ -3,19 +3,8 @@
     const DATE = '500101000000Z';
     const O_RDN_VALUE = '-'.repeat(20) + 'PROOF OF COMPROMISED KEY' + '-'.repeat(20);
 
-    function readCertificatePem (certificatePem) {
-        const certificate = new X509();
-
-        certificate.readCertPEM(certificatePem);
-
-        return certificate;
-    }
-
     function getChallengeCertificateSubject (certificatePem) {
-        const hex = pemtohex(certificatePem);
-
-        // get certificate SHA-256 thumbprint
-        const thumbprint = KJUR.crypto.Util.hashHex(hex, 'sha256');
+        const thumbprint = getCertificateThumbprint(certificatePem);
 
         return `/CN=${thumbprint}/O=${O_RDN_VALUE}`;
     }
@@ -49,6 +38,20 @@
             default:
                 throw 'Unsupported key type: ' + key.constructor;
         }
+    }
+
+    window.getCertificateThumbprint = function(certificatePem) {
+        const hex = pemtohex(certificatePem);
+
+        return KJUR.crypto.Util.hashHex(hex, 'sha256');
+    }
+
+    window.readCertificatePem = function (certificatePem) {
+        const certificate = new X509();
+
+        certificate.readCertPEM(certificatePem);
+
+        return certificate;
     }
 
     window.createProofOfKeyCompromise = function (compromisedCertificatePem, privateKeyPem) {

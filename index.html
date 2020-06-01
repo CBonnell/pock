@@ -8,26 +8,66 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
+    <link rel="stylesheet" href="style.css">
+
     <title>POCK</title>
   </head>
   <body>
-    <h1>Hello, world!</h1>
+    <div class="container-fluid">
+      <h1>Proof of Compromised Key</h1>
 
-    <div class="container">
-      <div class="row">
-        <form action="#" id="frm" onsubmit="event.preventDefault(); createPock();">
-          <div class="form-group">
-            <label>Certificate PEM Text</label>
-            <textarea cols="66" rows="25" id="txtCertificatePem"></textarea>
+      <div id="error-display">
+      </div>
+
+      <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+          <a class="nav-item nav-link active" id="nav-create-pock-tab" data-toggle="tab" href="#nav-create-pock" role="tab" aria-controls="nav-create-pock">Create POCK</a>
+          <a class="nav-item nav-link" id="nav-verify-pock-tab" data-toggle="tab" href="#nav-verify-pock" role="tab" aria-controls="nav-verify-pock">Verify POCK</a>
+        </div>
+      </nav>
+      <div class="tab-content" id="nav-tabContent">
+        <div class="tab-pane fade show active" id="nav-create-pock" role="tabpanel" aria-labelledby="nav-create-pock-tab">
+          <form action="#" onsubmit="event.preventDefault(); createPock();">
+          <div class="row">
+            <div class="col">
+              <div class="form-group">
+                <label for="txtCertificatePem">Certificate PEM Text</label>
+                <textarea class="form-control" cols="64" rows="15" id="txtCertificatePem" placeholder="A certificate starting with ----BEGIN CERTIFICATE-----"></textarea>
+              </div>
+            </div>
+            <div class="col">
+              <div id="compromisedCertificateDetails" class="mt-2">
+
+              </div>
+            </div>
           </div>
-          <div class="form-group">
-            <label>Compromised Key PEM Text</label>
-            <textarea cols="66" rows="25" id="txtCompromisedKeyPem"></textarea>
+          <div class="row">
+            <div class="col">
+              <div class="form-group">
+                <label for="txtCompromisedKeyPem">Compromised Key PEM Text</label>
+                <textarea class="form-control" cols="64" rows="10" id="txtCompromisedKeyPem" placeholder="A private key starting with a header similar to -----BEGIN PRIVATE KEY-----"></textarea>
+              </div>
+            </div>
+            <div class="col" id="compromisedKeyDetails">
+
+            </div>
           </div>
-          <button type="submit" class="btn btn-primary">Create Proof of Compromised Key</button>
-        </form>
+          <div class="row">
+            <div class="col">
+              <button type="submit" class="btn btn-primary">Create Proof of Compromised Key</button>
+            </div>
+            <div class="col" id="createPockResult">
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="nav-verify-pock" role="tabpanel" aria-labelledby="nav-verify-pock-tab">
+          
+        </div>
       </div>
     </div>
+
+
+
     <pre><span id="output"></span></pre> 
 
     <!-- Optional JavaScript -->
@@ -36,7 +76,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
-    <!-- <script src="https://cdn.jsdelivr.net/npm/node-forge@0.7.0/dist/forge.min.js" integrity="sha384-sgzMi6V7PVuBrH3D+OTG6gR4GjgQCsSSUYFcGoGCNr5ks7Sr3WrS+zNv5H33fTY5" crossorigin="anonymous"></script> -->
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsrsasign/8.0.15/jsrsasign-all-min.js" integrity="sha384-YPHyf1pDRNy0GvQA+xvDnin4YoTc9cSmvd31KIiLd4kTCP7xKRpACSrwtZLnS0Nv" crossorigin="anonymous"></script>
     <script src="pock.js"></script>
     <script src="ui.js"></script>
