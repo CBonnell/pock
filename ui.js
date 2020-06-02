@@ -7,9 +7,11 @@ function createPock() {
     errorHandler(function () {
         pockPem = createProofOfCompromisedKey(certificatePem, compromisedKeyPem);
 
+        displayMessage('success', 'The POCK has been successfully created');
+
         $('#createPockResult').text(pockPem);
         $('#createPockResultContainer').show();
-    }, 'Could not create proof of compromised key');
+    }, 'Could not create POCK');
 }
 
 function verifyPock() {
@@ -19,8 +21,8 @@ function verifyPock() {
     errorHandler(function () {
         verifyProofOfCompromisedKey(compromisedCertificatePem, pockCertificatePem);
 
-        displayMessage('success', 'The Proof of Compromised Key has been successfully verified.')
-    }, 'Could not verify proof of compromised key');
+        displayMessage('success', 'The POCK has been successfully verified as proof of compromise for the specified certificate');
+    }, 'Could not verify POCK');
 }
 
 function getCrtshLinkForThumbprint(thumbprint) {
@@ -54,15 +56,11 @@ function displayError(message, heading) {
 }
 
 function createListItem (header, value) {
-    const a = $('<a />', {href: '#', 'class': 'list-group-item list-group-item-action flex-column align-items-start py-0'});
-    const div = $('<div />', {'class': 'd-flex'});
-    a.append(div);
+    const tr = $('<tr />');
+    tr.append($('<th />', {scope: 'row', text: header}));
+    tr.append($('<td />', {text: value}));
 
-    div.append($('<h5 />', {text: header}));
-
-    a.append($('<p />', {text: value}));
-
-    return a;
+    return tr;
 }
 
 function getKeyType (key) {
@@ -81,19 +79,23 @@ function displayCertificateDetails (certificatePem, parentDiv, displayExternalLi
 
     const certificate = readCertificatePem(certificatePem);
 
-    const group = $('<div />', {'class': 'list-group'});
+    const table = $('<table />', {'class': 'table table-sm'});
 
-    group
+    const tbody = $('<tbody />');
+    table.append(tbody);
+
+    tbody
         .append(createListItem('Serial Number', certificate.getSerialNumberHex()))
         .append(createListItem('Issuer DN', certificate.getIssuerString()))
         .append(createListItem('Subject DN', certificate.getSubjectString()))
         .append(createListItem('Not After', zulutodate(certificate.getNotAfter().toLocaleString())))
-        .append(createListItem('SHA-256 Thumbprint', getCertificateThumbprint(certificatePem)));
+        .append(createListItem('Certificate SHA-256 Thumbprint', getPemThumbprint(certificatePem)))
+        .append(createListItem('SPKI SHA-256 Thumbprint', KJUR.crypto.Util.hashHex(certificate.getPublicKeyHex(), 'sha256')));
 
-    parentDiv.append(group);
+    parentDiv.append(table);
 
     if (displayExternalLinks) {
-        const thumbprint = getCertificateThumbprint(certificatePem);
+        const thumbprint = getPemThumbprint(certificatePem);
 
         parentDiv
             .append($('<a />', {href: getCrtshLinkForThumbprint(thumbprint), text: 'crt.sh', target: '_blank'}))
@@ -107,12 +109,15 @@ function displayKeyDetails (keyPem, parentDiv) {
 
     const key = KEYUTIL.getKey(keyPem);
 
-    const group = $('<div />', {'class': 'list-group'});
+    const table = $('<table />', {'class': 'table table-sm'});
 
-    group
+    const tbody = $('<tbody />');
+    table.append(tbody);
+
+    tbody
         .append(createListItem('Key Type', getKeyType(key)));
 
-    parentDiv.append(group);
+    parentDiv.append(table);
 }
 
 function errorHandler (f, heading) {
@@ -152,7 +157,7 @@ $(function () {
     txtPockCertificatePem.on('input', function () {
         errorHandler(function () {
             displayCertificateDetails(txtPockCertificatePem.val(), $('#pockCertificateDetailsVerify'));
-        }, 'Could not parse POCK certificate')
+        }, 'Could not parse POCK')
     });
 
     $('#btnCopyPockPem').click(function () { navigator.clipboard.writeText(pockPem); });

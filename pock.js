@@ -4,7 +4,7 @@
     const O_RDN_VALUE = '-'.repeat(20) + 'PROOF OF COMPROMISED KEY' + '-'.repeat(20);
 
     function getChallengeCertificateSubject (certificatePem) {
-        const thumbprint = getCertificateThumbprint(certificatePem);
+        const thumbprint = getPemThumbprint(certificatePem);
 
         return `/CN=${thumbprint}/O=${O_RDN_VALUE}`;
     }
@@ -25,7 +25,7 @@
     function getSignatureAlgorithmNameForKey (key) {
         switch (key.constructor) {
             case KJUR.crypto.ECDSA:
-                switch (key.getShortNISTCurveName()) {
+                switch (key.getShortNISTPCurveName()) {
                     case 'P-256':
                         return 'SHA256withECDSA';
                     case 'P-384':
@@ -40,8 +40,8 @@
         }
     }
 
-    window.getCertificateThumbprint = function(certificatePem) {
-        const hex = pemtohex(certificatePem);
+    window.getPemThumbprint = function(pem) {
+        const hex = pemtohex(pem);
 
         return KJUR.crypto.Util.hashHex(hex, 'sha256');
     }
@@ -75,8 +75,16 @@
         });
 
         const challengeCertificate = readCertificatePem(challengeCertificatePem);
+        
+        try {
+            var isValidSignature = challengeCertificate.verifySignature(compromisedCertificate.getPublicKey());
+        }
+        catch (e) {
+            console.error(e);
 
-        if (!challengeCertificate.verifySignature(compromisedCertificate.getPublicKey())) {
+            isValidSignature = false;
+        }
+        if (!isValidSignature) {
             throw 'The public key in the certificate does not match the compromised private key';
         }
 
@@ -88,19 +96,19 @@
         const challengeCertificate = readCertificatePem(challengeCertificatePem);
 
         if (!verifyCertificateFields(challengeCertificate)) {
-            throw 'Proof of Compromised Key certificate does not contain the expected certificate field values';
+            throw 'POCK does not contain the expected certificate field values';
         }
 
         if (compromisedCertificate.getPublicKeyHex() != challengeCertificate.getPublicKeyHex()) {
-            throw 'Compromised certificate and Proof of Compromised Key certificate public keys do not match';
+            throw 'Compromised certificate and POCK public keys do not match';
         }
 
         if (!isSelfSigned (challengeCertificate)) {
-            throw 'Proof of Compromised Key certificate is not self-signed';
+            throw 'POCK is not self-signed';
         }
 
         if (challengeCertificate.getSubjectString() != getChallengeCertificateSubject(compromisedCertificatePem)) {
-            throw 'Proof of Compromised Key certificate subject does not match compromised certificate thumbprint';
+            throw 'POCK subject does not match compromised certificate thumbprint';
         }
     };
 })();
