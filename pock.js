@@ -1,12 +1,10 @@
 (function () {
     const SERIAL_NUMBER = 0;
     const DATE = '500101000000Z';
-    const O_RDN_VALUE = '-'.repeat(20) + 'PROOF OF COMPROMISED KEY' + '-'.repeat(20);
+    const CN_RDN_VALUE = '-'.repeat(20) + 'PROOF OF COMPROMISED KEY' + '-'.repeat(20);
 
-    function getChallengeCertificateSubject (certificatePem) {
-        const thumbprint = getPemThumbprint(certificatePem);
-
-        return `/CN=${thumbprint}/O=${O_RDN_VALUE}`;
+    function getChallengeCertificateSubject () {
+        return `/CN=${CN_RDN_VALUE}`;
     }
 
     function isSelfSigned (certificate) {
@@ -19,7 +17,8 @@
     function verifyCertificateFields (certificate) {
         return parseInt(certificate.getSerialNumberHex(), 16) == SERIAL_NUMBER &&
             certificate.getNotBefore() == DATE &&
-            certificate.getNotBefore() == certificate.getNotAfter();
+            certificate.getNotBefore() == certificate.getNotAfter() &&
+            certificate.getSubjectString() == getChallengeCertificateSubject();
     }
 
     function getSignatureAlgorithmNameForKey (key) {
@@ -54,14 +53,11 @@
         return certificate;
     }
 
-    window.createProofOfCompromisedKey = function (compromisedCertificatePem, privateKeyPem) {
-        const compromisedCertificate = readCertificatePem(compromisedCertificatePem);
+    window.createProofOfCompromisedKey = function (privateKeyPem) {
         const key = KEYUTIL.getKey(privateKeyPem);
 
-        const dn = getChallengeCertificateSubject(compromisedCertificatePem);
+        const dn = getChallengeCertificateSubject();
         const sigAlgName = getSignatureAlgorithmNameForKey(key);
-
-        const publicKeyPem = KEYUTIL.getPEM(compromisedCertificate.getPublicKey());
 
         const challengeCertificatePem = KJUR.asn1.x509.X509Util.newCertPEM({
             serial: {int: SERIAL_NUMBER},
@@ -70,45 +66,27 @@
             subject: {str: dn},
             notbefore: {str: DATE},
             notafter: {str: DATE},
-            sbjpubkey: publicKeyPem,
+            sbjpubkey: privateKeyPem,
             cakey: key
         });
-
-        const challengeCertificate = readCertificatePem(challengeCertificatePem);
-        
-        try {
-            var isValidSignature = challengeCertificate.verifySignature(compromisedCertificate.getPublicKey());
-        }
-        catch (e) {
-            console.error(e);
-
-            isValidSignature = false;
-        }
-        if (!isValidSignature) {
-            throw 'The public key in the certificate does not match the compromised private key';
-        }
 
         return challengeCertificatePem;
     };
 
     window.verifyProofOfCompromisedKey = function (compromisedCertificatePem, challengeCertificatePem) {
-        const compromisedCertificate = readCertificatePem(compromisedCertificatePem);
+        const compromisedCertificate = compromisedCertificatePem ? readCertificatePem(compromisedCertificatePem) : null;
         const challengeCertificate = readCertificatePem(challengeCertificatePem);
 
         if (!verifyCertificateFields(challengeCertificate)) {
             throw 'POCK does not contain the expected certificate field values';
         }
 
-        if (compromisedCertificate.getPublicKeyHex() != challengeCertificate.getPublicKeyHex()) {
-            throw 'Compromised certificate and POCK public keys do not match';
-        }
-
         if (!isSelfSigned (challengeCertificate)) {
             throw 'POCK is not self-signed';
         }
 
-        if (challengeCertificate.getSubjectString() != getChallengeCertificateSubject(compromisedCertificatePem)) {
-            throw 'POCK subject does not match compromised certificate thumbprint';
+        if (compromisedCertificate && compromisedCertificate.getPublicKeyHex() != challengeCertificate.getPublicKeyHex()) {
+            throw 'Compromised certificate and POCK public keys do not match';
         }
     };
 })();

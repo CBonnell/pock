@@ -1,16 +1,17 @@
 let pockPem = null;
 
 function createPock() {
-    const certificatePem = $('#txtCertificatePem').val();
     const compromisedKeyPem = $('#txtCompromisedKeyPem').val();
 
     errorHandler(function () {
-        pockPem = createProofOfCompromisedKey(certificatePem, compromisedKeyPem);
+        pockPem = createProofOfCompromisedKey(compromisedKeyPem);
 
         displayMessage('success', 'The POCK has been successfully created');
 
         $('#createPockResult').text(pockPem);
         $('#createPockResultContainer').show();
+
+        displayCertificateDetails(pockPem, $('#createdPockDetails'));
     }, 'Could not create POCK');
 }
 
@@ -21,16 +22,18 @@ function verifyPock() {
     errorHandler(function () {
         verifyProofOfCompromisedKey(compromisedCertificatePem, pockCertificatePem);
 
-        displayMessage('success', 'The POCK has been successfully verified as proof of compromise for the specified certificate');
+        displayMessage('success', compromisedCertificatePem ?
+            'The POCK has been successfully verified as proof of compromise for the specified certificate' :
+            'The POCK has been successfully verified');
     }, 'Could not verify POCK');
 }
 
-function getCrtshLinkForThumbprint(thumbprint) {
-    return `https://crt.sh?sha256=${thumbprint}`
+function getCrtshLinkForThumbprint(type, thumbprint) {
+    return `https://crt.sh?${type}=${thumbprint}`
 }
 
-function getCensysLinkForThumbprint(thumbprint) {
-    return `https://censys.io/certificates?q=parsed.fingerprint_sha256%3A+${thumbprint}`
+function getCensysLinkForThumbprint(type, thumbprint) {
+    return `https://censys.io/certificates?q=parsed.${type}%3A+${thumbprint}`
 }
 
 function displayMessage(messageClass, message, heading) {
@@ -55,10 +58,17 @@ function displayError(message, heading) {
     displayMessage('danger', message, heading);
 }
 
-function createListItem (header, value) {
+function createListItem (header, value, extra) {
     const tr = $('<tr />');
     tr.append($('<th />', {scope: 'row', text: header}));
-    tr.append($('<td />', {text: value}));
+
+    const td = $('<td />', {text: value});
+
+    tr.append(td);
+    if (extra) {
+        td.append($('<br />'));
+        td.append(extra);
+    }
 
     return tr;
 }
@@ -74,7 +84,7 @@ function getKeyType (key) {
     } 
 }
 
-function displayCertificateDetails (certificatePem, parentDiv, displayExternalLinks) {
+function displayCertificateDetails (certificatePem, parentDiv) {
     parentDiv.empty();
 
     const certificate = readCertificatePem(certificatePem);
@@ -84,24 +94,34 @@ function displayCertificateDetails (certificatePem, parentDiv, displayExternalLi
     const tbody = $('<tbody />');
     table.append(tbody);
 
+    const generateThumbprintLinks = function (crtshType, censysType, thumbprint) {
+        const span = $('<span />', );
+        span
+            .append($('<a />', {href: getCrtshLinkForThumbprint(crtshType, thumbprint), target: '_blank', text: 'crt.sh'}))
+            .append(document.createTextNode(' '))
+            .append($('<a />', {href: getCensysLinkForThumbprint(censysType, thumbprint), target: '_blank', text: 'censys.io'}));
+
+        return span;
+    }
+
+    const certificateThumbprint = getPemThumbprint(certificatePem);
+    const spkiThumbprint = KJUR.crypto.Util.hashHex(certificate.getPublicKeyHex(), 'sha256');
+
     tbody
         .append(createListItem('Serial Number', certificate.getSerialNumberHex()))
         .append(createListItem('Issuer DN', certificate.getIssuerString()))
         .append(createListItem('Subject DN', certificate.getSubjectString()))
         .append(createListItem('Not After', zulutodate(certificate.getNotAfter().toLocaleString())))
-        .append(createListItem('Certificate SHA-256 Thumbprint', getPemThumbprint(certificatePem)))
-        .append(createListItem('SPKI SHA-256 Thumbprint', KJUR.crypto.Util.hashHex(certificate.getPublicKeyHex(), 'sha256')));
+        .append(createListItem(
+            'Certificate SHA-256 Thumbprint',
+            certificateThumbprint,
+            generateThumbprintLinks('sha256', 'sha256_fingerprint', certificateThumbprint)))
+        .append(createListItem(
+            'SPKI SHA-256 Thumbprint',
+            spkiThumbprint,
+            generateThumbprintLinks('spkisha256', 'spki_subject_fingerprint', spkiThumbprint)));
 
     parentDiv.append(table);
-
-    if (displayExternalLinks) {
-        const thumbprint = getPemThumbprint(certificatePem);
-
-        parentDiv
-            .append($('<a />', {href: getCrtshLinkForThumbprint(thumbprint), text: 'crt.sh', target: '_blank'}))
-            .append($('<br />'))
-            .append($('<a />', {href: getCensysLinkForThumbprint(thumbprint), text: 'censys.io', target: '_blank'}));
-    }
 }
 
 function displayKeyDetails (keyPem, parentDiv) {
@@ -132,17 +152,11 @@ function errorHandler (f, heading) {
 }
 
 $(function () {
-    const txtCertificatePem = $('#txtCertificatePem');
     const txtCompromisedKeyPem = $('#txtCompromisedKeyPem');
 
     const txtCompromisedCertificatePem = $('#txtCompromisedCertificatePem');
     const txtPockCertificatePem = $('#txtPockCertificatePem');
 
-    txtCertificatePem.on('input', function () {
-        errorHandler(function () {
-            displayCertificateDetails(txtCertificatePem.val(), $('#compromisedCertificateDetailsCreate'), true);
-        }, 'Could not parse compromised certificate')
-    });
     txtCompromisedKeyPem.on('input', function () {
         errorHandler(function () {
             displayKeyDetails(txtCompromisedKeyPem.val(), $('#compromisedKeyDetails'));

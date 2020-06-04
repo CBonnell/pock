@@ -31,18 +31,6 @@
             <div class="row">
               <div class="col">
                 <div class="form-group">
-                  <label for="txtCertificatePem">Compromised Certificate PEM Text</label>
-                  <textarea class="form-control" cols="64" rows="10" id="txtCertificatePem" placeholder="A certificate starting with ----BEGIN CERTIFICATE-----"></textarea>
-                </div>
-              </div>
-              <div class="col">
-                <div id="compromisedCertificateDetailsCreate" class="mt-2">
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col">
-                <div class="form-group">
                   <label for="txtCompromisedKeyPem">Compromised Key PEM Text</label>
                   <textarea class="form-control" cols="64" rows="10" id="txtCompromisedKeyPem" placeholder="A private key starting with a header similar to -----BEGIN PRIVATE KEY-----"></textarea>
                 </div>
@@ -58,10 +46,16 @@
               </div>
             </div>
             <div class="row mt-2">
-              <div class="card" id="createPockResultContainer" style="display: none;">
-                <div class="card-body">
-                  <pre id="createPockResult"></pre>
-                  <button id="btnCopyPockPem" class="btn btn-success">Copy to Clipboard</button>
+              <div class="col">
+                <div class="card" id="createPockResultContainer" style="display: none;">
+                  <div class="card-body">
+                    <pre id="createPockResult"></pre>
+                    <button id="btnCopyPockPem" class="btn btn-success">Copy to Clipboard</button>
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div id="createdPockDetails" class="mt-3">
                 </div>
               </div>
             </div>
@@ -72,24 +66,24 @@
             <div class="row">
               <div class="col">
                 <div class="form-group">
-                  <label for="txtCompromisedCertificatePem">Compromised Certificate PEM Text</label>
-                  <textarea class="form-control" cols="64" rows="10" id="txtCompromisedCertificatePem" placeholder="A certificate starting with ----BEGIN CERTIFICATE-----"></textarea>
-                </div>
-              </div>
-              <div class="col">
-                <div id="compromisedCertificateDetailsVerify" class="mt-2">
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col">
-                <div class="form-group">
                   <label for="txtPockCertificatePem">POCK PEM Text</label>
                   <textarea class="form-control" cols="64" rows="10" id="txtPockCertificatePem" placeholder="A certificate starting with ----BEGIN CERTIFICATE-----"></textarea>
                 </div>
               </div>
               <div class="col">
                 <div id="pockCertificateDetailsVerify" class="mt-2">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <div class="form-group">
+                  <label for="txtCompromisedCertificatePem">Compromised Certificate PEM Text (optional)</label>
+                  <textarea class="form-control" cols="64" rows="10" id="txtCompromisedCertificatePem" placeholder="A certificate starting with ----BEGIN CERTIFICATE-----"></textarea>
+                </div>
+              </div>
+              <div class="col">
+                <div id="compromisedCertificateDetailsVerify" class="mt-2">
                 </div>
               </div>
             </div>
