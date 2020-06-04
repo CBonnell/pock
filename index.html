@@ -45,21 +45,21 @@
                 <button type="submit" form="frmCreatePock" class="btn btn-primary">Create POCK</button>
               </div>
             </div>
-            <div class="row mt-2">
-              <div class="col">
-                <div class="card" id="createPockResultContainer" style="display: none;">
-                  <div class="card-body">
-                    <pre id="createPockResult"></pre>
-                    <button id="btnCopyPockPem" class="btn btn-success">Copy to Clipboard</button>
-                  </div>
-                </div>
-              </div>
-              <div class="col">
-                <div id="createdPockDetails" class="mt-3">
+          </form>
+          <div class="row mt-2">
+            <div class="col">
+              <div class="card" id="createPockResultContainer" style="display: none;">
+                <div class="card-body">
+                  <pre id="createPockResult"></pre>
+                  <button id="btnCopyPockPem" class="btn btn-success">Copy to Clipboard</button>
                 </div>
               </div>
             </div>
-          </form>
+            <div class="col">
+              <div id="createdPockDetails" class="mt-3">
+              </div>
+            </div>
+          </div>
         </div>
         <div class="tab-pane fade" id="nav-verify-pock" role="tabpanel" aria-labelledby="nav-verify-pock-tab">
           <form id="frmVerifyPock" action="#" onsubmit="event.preventDefault(); verifyPock();">
