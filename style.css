@@ -2,6 +2,11 @@ textarea {
     font-family: monospace;
 }
 
+code {
+    display: block;
+    white-space: pre;
+}
+
 h1 {
     text-align: center;
 }

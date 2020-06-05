@@ -8,7 +8,7 @@ function createPock() {
 
         displayMessage('success', 'The POCK has been successfully created');
 
-        $('#createPockResult').text(pockPem);
+        $('#createPockResult').text(pockPem.replace(/\r/g, ''));
         $('#createPockResultContainer').show();
 
         displayCertificateDetails(pockPem, $('#createdPockDetails'));
