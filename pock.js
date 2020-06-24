@@ -1,5 +1,5 @@
 (function () {
-    const SERIAL_NUMBER = 0;
+    const SERIAL_NUMBER = 1;
     const DATE = '500101000000Z';
     const CN_RDN_VALUE = '-'.repeat(20) + 'PROOF OF COMPROMISED KEY' + '-'.repeat(20);
 
