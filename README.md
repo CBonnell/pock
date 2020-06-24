@@ -1,5 +1,7 @@
 # PoCK: Proof of Compromised Key
 
+**Try out the web-based proof-of-concept at** https://cbonnell.github.io/pock
+
 ## What is PoCK?
 
 PoCK is a mechanism by which possession of a private key can be demonstrated. The primary use case is to demonstrate that the corresponding private key for a Certificate in the web PKI has been compromised and that revocation of all certificates containing the public key is required.
