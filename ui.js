@@ -6,13 +6,13 @@ function createPock() {
     errorHandler(function () {
         pockPem = createProofOfCompromisedKey(compromisedKeyPem);
 
-        displayMessage('success', 'The POCK has been successfully created');
+        displayMessage('success', 'The PoCK has been successfully created');
 
         $('#createPockResult').text(pockPem.replace(/\r/g, ''));
         $('#createPockResultContainer').show();
 
         displayCertificateDetails(pockPem, $('#createdPockDetails'));
-    }, 'Could not create POCK');
+    }, 'Could not create PoCK');
 }
 
 function verifyPock() {
@@ -23,9 +23,9 @@ function verifyPock() {
         verifyProofOfCompromisedKey(compromisedCertificatePem, pockCertificatePem);
 
         displayMessage('success', compromisedCertificatePem ?
-            'The POCK has been successfully verified as proof of compromise for the specified certificate' :
-            'The POCK has been successfully verified');
-    }, 'Could not verify POCK');
+            'The PoCK has been successfully verified as proof of compromise for the specified certificate' :
+            'The PoCK has been successfully verified');
+    }, 'Could not verify PoCK');
 }
 
 function getCrtshLinkForThumbprint(type, thumbprint) {
@@ -171,7 +171,7 @@ $(function () {
     txtPockCertificatePem.on('input', function () {
         errorHandler(function () {
             displayCertificateDetails(txtPockCertificatePem.val(), $('#pockCertificateDetailsVerify'));
-        }, 'Could not parse POCK')
+        }, 'Could not parse PoCK')
     });
 
     $('#btnCopyPockPem').click(function () { navigator.clipboard.writeText(pockPem); });

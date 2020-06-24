@@ -78,15 +78,15 @@
         const challengeCertificate = readCertificatePem(challengeCertificatePem);
 
         if (!verifyCertificateFields(challengeCertificate)) {
-            throw 'POCK does not contain the expected certificate field values';
+            throw 'PoCK does not contain the expected certificate field values';
         }
 
         if (!isSelfSigned (challengeCertificate)) {
-            throw 'POCK is not self-signed';
+            throw 'PoCK is not self-signed';
         }
 
         if (compromisedCertificate && compromisedCertificate.getPublicKeyHex() != challengeCertificate.getPublicKeyHex()) {
-            throw 'Compromised certificate and POCK public keys do not match';
+            throw 'Compromised certificate and PoCK public keys do not match';
         }
     };
 })();
