@@ -27,14 +27,14 @@ The above two benefits translate into less hassle for researchers and CAs alike,
 
 PoCK uses X.509 certificates as the container format for the proof. Various fields in the certificate are static:
 
-- Serial number (`0x1`)
-- notBefore (`1950-01-01 midnight UTC`)
-- notAfter (`1950-01-01 midnight UTC`)
-- subjectDN (`CN=--------------------PROOF OF COMPROMISED KEY--------------------`)
-- issuerDN (`CN=--------------------PROOF OF COMPROMISED KEY--------------------`)
+- Serial number `0x1`
+- notBefore `1950-01-01 midnight UTC`
+- notAfter `1950-01-01 midnight UTC`
+- subjectDN `CN=--------------------PROOF OF COMPROMISED KEY--------------------`
+- issuerDN `CN=--------------------PROOF OF COMPROMISED KEY--------------------`
 - no extensions
 
-These values were chosen so that a PoCK could not be confused with a valid certificate that may be created for practical use. In other words, the probability that the rightful possessor of the private key would create such a certificate which then could be used to revoke certificates that contain the same key in the web PKI even if the private key is not compromised (i.e., a DoS attack) is exceedingly low.
+These values were chosen so that a PoCK could not be confused with a valid certificate that may be created for practical use. In other words, the probability that the rightful possessor of the private key would create such a certificate which then could be leveraged by an attacker to revoke certificates even if the private key is not compromised (i.e., a DoS attack) is exceedingly low.
 
 The PoCK contains the public key component of the compromised key and is signed by the compromised key. In other words, a PoCK is a self-signed certificate with a specific set of field values.
 
