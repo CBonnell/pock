@@ -22,7 +22,7 @@
             certificate.getNotBefore() == certificate.getNotAfter() &&
             certificate.getSubjectString() == getChallengeCertificateSubject() &&
             certificate.aExtInfo.length == 1 &&
-            $.isEmptyObject(basicConstraints);
+            basicConstraints && $.isEmptyObject(basicConstraints);
         }
 
     function getSignatureAlgorithmNameForKey (key) {

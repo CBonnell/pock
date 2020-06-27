@@ -43,3 +43,7 @@ The PoCK contains the public key component of the compromised key and is signed 
 Verification of the PoCK is as simple as verifying the signature using the public key contained in the certificate.
 
 To obtain the set of certificates that need to be revoked, the SPKI hash of the PoCK can be used to search for certificates that have the same SPKI hash.
+
+## Acknowledgements
+
+Thanks to Kenji Urushima for the [jsrsasign](https://github.com/kjur/jsrsasign) library, which provides the primitives for key handling, certificate creation, etc. for the proof-of-concept implementation. 
