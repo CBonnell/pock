@@ -32,7 +32,7 @@ PoCK uses X.509 certificates as the container format for the proof. Various fiel
 - notAfter `1950-01-01 midnight UTC`
 - subjectDN `CN=--------------------PROOF OF COMPROMISED KEY--------------------`
 - issuerDN `CN=--------------------PROOF OF COMPROMISED KEY--------------------`
-- no extensions
+- Extensions `basicConstraints cA: false, critical: true`
 
 These values were chosen so that a PoCK could not be confused with a valid certificate that may be created for practical use. In other words, the probability that the rightful possessor of the private key would create such a certificate which then could be leveraged by an attacker to revoke certificates even if the private key is not compromised (i.e., a DoS attack) is exceedingly low.
 

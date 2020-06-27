@@ -15,11 +15,15 @@
     }
 
     function verifyCertificateFields (certificate) {
+        const basicConstraints = certificate.getExtBasicConstraints();
+
         return parseInt(certificate.getSerialNumberHex(), 16) == SERIAL_NUMBER &&
             certificate.getNotBefore() == DATE &&
             certificate.getNotBefore() == certificate.getNotAfter() &&
-            certificate.getSubjectString() == getChallengeCertificateSubject();
-    }
+            certificate.getSubjectString() == getChallengeCertificateSubject() &&
+            certificate.aExtInfo.length == 1 &&
+            $.isEmptyObject(basicConstraints);
+        }
 
     function getSignatureAlgorithmNameForKey (key) {
         switch (key.constructor) {
@@ -66,6 +70,9 @@
             subject: {str: dn},
             notbefore: {str: DATE},
             notafter: {str: DATE},
+            ext: [
+                {basicConstraints: {cA: false, critical: true}}
+            ],
             sbjpubkey: privateKeyPem,
             cakey: key
         });
